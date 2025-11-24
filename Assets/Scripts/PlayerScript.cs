@@ -67,12 +67,9 @@ void Update()
         animator.SetFloat("verticalVelocity", rigidbody2D.linearVelocityY);
 
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down);
-        if(hit.collider != null)
-        {
-            Debug.Log($"{hit.distance}");
-        }
+
         //If the character is not grounded and the raycast detected the collision closer to 0.4f
-        if (!isGrounded && hit.collider != null && hit.distance < 0.15f)
+        if (!isGrounded && rigidbody2D.linearVelocityY < 0f && hit.collider != null && hit.distance < 0.15f)
         {
             //Mark that now is grounded
             isGrounded = true;
@@ -82,6 +79,7 @@ void Update()
         if (Input.GetAxis("Jump") > 0 && isGrounded)
         {
             rigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            Debug.Log(rigidbody2D.linearVelocityY);
             isGrounded = false;
             animator.SetBool("isGrounded", isGrounded);
         }
