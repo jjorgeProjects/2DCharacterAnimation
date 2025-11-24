@@ -17,8 +17,7 @@ public class PlayerScript : MonoBehaviour
     public bool isGrounded = false;
     //If the character is facing the right direction
     private bool facingRight;
-    //If the jump button is pressed
-    private bool jumping;
+  
 
     //Unity components
     private Rigidbody2D rigidbody2D;
@@ -47,13 +46,6 @@ void Update()
         //Get the horizontal movemente from the Input (Legacy)
         horizontalMovement = Input.GetAxis("Horizontal");
 
-        //Getting the Jump axis
-        if(Input.GetAxis("Jump") > 0 && isGrounded)
-        {
-            //Marking jumping was pressed
-            jumping = true;
-        }
-
         //Set the float variable for the animator to change the state
         animator.SetFloat("movementSpeed", Mathf.Abs(horizontalMovement));
 
@@ -64,14 +56,7 @@ void Update()
             Turn();
         }
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down);
-
-        //If the character is not grounded and the raycast detected the collision closer to 0.4f
-        if (!isGrounded && hit.collider != null && hit.distance < 0.4f)
-        {
-            //Mark that now is grounded
-            isGrounded = true;
-        }
+        
     }
 
     private void FixedUpdate()
@@ -79,11 +64,26 @@ void Update()
         //Update the velocity vector, the X component, using the input value times the movement speed
         rigidbody2D.linearVelocityX = horizontalMovement * movementSpeed;
 
-        if (jumping)
+        animator.SetFloat("verticalVelocity", rigidbody2D.linearVelocityY);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down);
+        if(hit.collider != null)
+        {
+            Debug.Log($"{hit.distance}");
+        }
+        //If the character is not grounded and the raycast detected the collision closer to 0.4f
+        if (!isGrounded && hit.collider != null && hit.distance < 0.15f)
+        {
+            //Mark that now is grounded
+            isGrounded = true;
+            animator.SetBool("isGrounded", isGrounded);
+        }
+
+        if (Input.GetAxis("Jump") > 0 && isGrounded)
         {
             rigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            jumping = false;
             isGrounded = false;
+            animator.SetBool("isGrounded", isGrounded);
         }
     }
 
