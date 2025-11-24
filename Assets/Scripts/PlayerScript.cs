@@ -74,6 +74,7 @@ void Update()
             //Mark that now is grounded
             isGrounded = true;
             animator.SetBool("isGrounded", isGrounded);
+            rigidbody2D.linearVelocityX = 0;
         }
 
         if (Input.GetAxis("Jump") > 0 && isGrounded)
