@@ -530,7 +530,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movementSpeed: 5
-  horizontalMovement: 0
+  jumpForce: 4
+  isGrounded: 0
 --- !u!1 &1192874989
 GameObject:
   m_ObjectHideFlags: 0
