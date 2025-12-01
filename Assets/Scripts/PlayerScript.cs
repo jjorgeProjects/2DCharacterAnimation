@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -10,6 +12,7 @@ public class PlayerScript : MonoBehaviour
     public float jumpForce;
 
     // Variable to store the input axis changes
+    private Vector2 movement;
     private float horizontalMovement;
 
     //Bool variables to control:
@@ -22,15 +25,19 @@ public class PlayerScript : MonoBehaviour
     //Unity components
     private Rigidbody2D rigidbody2D;
     private Animator animator;
+    private PlayerInput input;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        //Get the components that we will need later
+        //Get the component   s that we will need later
         //RigidBody2D for movement
         rigidbody2D = GetComponent<Rigidbody2D>();
         //Animator to set variables accordingly
         animator = GetComponent<Animator>();
+
+        input = GetComponent<PlayerInput>();
+
         //Starts facing right
         facingRight = true;
         //Starts in the air, ergo not grounded
@@ -44,7 +51,10 @@ public class PlayerScript : MonoBehaviour
 void Update()
     {
         //Get the horizontal movemente from the Input (Legacy)
-        horizontalMovement = Input.GetAxis("Horizontal");
+        //horizontalMovement = Input.GetAxis("Horizontal");
+
+        movement = input.actions["Move"].ReadValue<Vector2>();
+        horizontalMovement = movement.x;
 
         //Set the float variable for the animator to change the state
         animator.SetFloat("movementSpeed", Mathf.Abs(horizontalMovement));
@@ -78,6 +88,30 @@ void Update()
         }
 
         if (Input.GetAxis("Jump") > 0 && isGrounded)
+        {
+            rigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            Debug.Log(rigidbody2D.linearVelocityY);
+            isGrounded = false;
+            animator.SetBool("isGrounded", isGrounded);
+        }
+    }
+
+    /*
+    public void Move(InputAction.CallbackContext callbackContext)
+    {
+        if (callbackContext.performed)
+        {
+            Debug.Log(callbackContext.valueType);
+
+            movement = callbackContext.ReadValue<Vector2>();
+            Debug.Log(movement);
+        }
+
+    }*/
+
+    public void Jump(InputAction.CallbackContext callbackContext)
+    {
+        if (callbackContext.performed && isGrounded)
         {
             rigidbody2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             Debug.Log(rigidbody2D.linearVelocityY);
